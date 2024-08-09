@@ -138,14 +138,6 @@ function displayRecords(data) {
         enableTime: true,
         dateFormat: 'Y-m-d H:i',
     });
-
-    recordsDiv.addEventListener('click', function(event) {
-        if (event.target.tagName === 'BUTTON' && event.target.textContent.trim() === 'Save Change') {
-            const row = event.target.closest('tr');
-            const id = row.cells[0].textContent; 
-            saveRecord(id);
-        }
-    });
 }
 
 function isLate(datetime) {
@@ -155,29 +147,12 @@ function isLate(datetime) {
 }
 
 function saveRecord(id) {
+    const userId = document.getElementById(`user_id_${id}`).value;
+    const datetimeIn = document.getElementById(`datetime_${id}_in`).value.replace('T', ' ');
+    const datetimeOut = document.getElementById(`datetime_${id}_out`).value.replace('T', ' ');
+    const attendanceStatus = document.getElementById(`attendance_status_${id}`).value;
 
-    // Get element references first
-    const userIdElement = document.getElementById(`user_id_${id}`);
-    const datetimeInElement = document.getElementById(`datetime_${id}_in`);
-    const datetimeOutElement = document.getElementById(`datetime_${id}_out`);
-    const attendanceStatusElement = document.getElementById(`attendance_status_${id}`);
-    const attendanceTypeElement = document.getElementById(`attendance_type_${id}`);
-
-    // Then get the values
-    const userId = userIdElement.value;
-    const datetimeIn = datetimeInElement.value.replace('T', ' ');
-    const datetimeOut = datetimeOutElement.value.replace('T', ' ');
-    const attendanceStatus = attendanceStatusElement.value;
-    const attendanceType = attendanceTypeElement.value;
-
-    // Now you can use the elements in console.log
-    console.log('userIdElement:', userIdElement);
-    console.log('datetimeInElement:', datetimeInElement);
-    console.log('datetimeOutElement:', datetimeOutElement);
-    console.log('attendanceStatusElement:', attendanceStatusElement);
-    console.log('attendanceTypeElement:', attendanceTypeElement);
-
-    console.log(`Saving record with ID: ${id}, DateTime In: ${datetimeIn}, DateTime Out: ${datetimeOut}, Attendance Status: ${attendanceStatus}, Attendance Type: ${attendanceType}`);
+    console.log(`Saving record with ID: ${id}, DateTime In: ${datetimeIn}, DateTime Out: ${datetimeOut}, attendance_status Status: ${attendanceStatus}`);
 
     if (!userId || !attendanceStatus) {
         alert('User ID and attendance_status Status must be filled.');

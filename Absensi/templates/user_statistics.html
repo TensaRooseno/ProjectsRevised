@@ -32,7 +32,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">
             <img src="img/logo.png" alt="Company Logo" style="height: 40px; margin-right: 10px;">
-            attendance_status System
+            Attendance System
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -79,8 +79,8 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Izin</h5>
-                    <p class="card-text" id="Izin"></p>
+                    <h5 class="card-title">Dispen</h5>
+                    <p class="card-text" id="dispen"></p>
                 </div>
             </div>
             <div class="card">
@@ -129,7 +129,7 @@
         </div>
 
         <div class="table-container">
-            <h2>attendance_status Records</h2>
+            <h2>Attendance Records</h2>
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -138,12 +138,12 @@
                         <th>Full Name</th>
                         <th>Date Time</th>
                         <th>Check Type</th>
-                        <th>attendance_status</th>
+                        <th>Attendance</th>
                         <th>Keterlambatan</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody id="attendance_status-table-body">
+                <tbody id="attendance-table-body">
                     <!-- Records will be injected here -->
                 </tbody>
             </table>
@@ -183,12 +183,12 @@
                     } else {
                         document.getElementById('user-name').textContent = `${data.user.full_name}'s User Statistics`;
         
-                        const attendance_status = data.attendance_status;
-                        document.getElementById('totalRecords').textContent = attendance_status.length;
-                        const presentCount = attendance_status.filter(record => record.attendance_status > 0).length;
-                        const absentCount = attendance_status.filter(record => record.attendance_status === 0).length;
-                        const lateCount = attendance_status.filter(record => record.late === 1).length;
-                        const onTimeCount = attendance_status.length - lateCount;
+                        const attendance = data.attendance;
+                        document.getElementById('totalRecords').textContent = attendance.length;
+                        const presentCount = attendance.filter(record => record.attendance > 0).length;
+                        const absentCount = attendance.filter(record => record.attendance === 0).length;
+                        const lateCount = attendance.filter(record => record.late === 1).length;
+                        const onTimeCount = attendance.length - lateCount;
                         document.getElementById('present').textContent = presentCount;
                         document.getElementById('absent').textContent = absentCount;
                         document.getElementById('late').textContent = lateCount;
@@ -197,9 +197,9 @@
                         const lateStatistics = `
                             Total Late: ${lateCount}<br>
                             <ul>
-                                <li>15-30 minutes late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 15 && new Date(record.datetime).getMinutes() < 30).length}</li>
-                                <li>30-60 minutes late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 30 && new Date(record.datetime).getMinutes() < 60).length}</li>
-                                <li>More than an hour late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 60).length}</li>
+                                <li>15-30 minutes late: ${attendance.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 15 && new Date(record.datetime).getMinutes() < 30).length}</li>
+                                <li>30-60 minutes late: ${attendance.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 30 && new Date(record.datetime).getMinutes() < 60).length}</li>
+                                <li>More than an hour late: ${attendance.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 60).length}</li>
                             </ul>
                         `;
                         document.getElementById('lateStatistics').innerHTML = lateStatistics;
@@ -223,20 +223,20 @@
                                     },
                                     title: {
                                         display: true,
-                                        text: 'attendance_status Statistics'
+                                        text: 'Attendance Statistics'
                                     }
                                 }
                             }
                         });
         
                         const dateWiseAttendance = {};
-                        attendance_status.forEach(record => {
+                        attendance.forEach(record => {
                             const date = new Date(record.datetime);
                             const monthDay = date.toISOString().split('T')[0].substring(5); // Extract month and day
                             if (!dateWiseAttendance[monthDay]) {
                                 dateWiseAttendance[monthDay] = { in: [], out: [] };
                             }
-                            if (record.attendance_status === 1) {
+                            if (record.attendance === 1) {
                                 dateWiseAttendance[monthDay].in.push(record);
                             } else {
                                 dateWiseAttendance[monthDay].out.push(record);
@@ -249,7 +249,7 @@
                             data: {
                                 labels: Object.keys(dateWiseAttendance),
                                 datasets: [{
-                                    label: 'attendance_status Count',
+                                    label: 'Attendance Count',
                                     data: Object.values(dateWiseAttendance).map(records => records.in.length + records.out.length),
                                     borderColor: '#FF5733',
                                     backgroundColor: 'rgba(255, 87, 51, 0.2)',
@@ -265,7 +265,7 @@
                                     },
                                     title: {
                                         display: true,
-                                        text: 'Date Wise attendance_status'
+                                        text: 'Date Wise Attendance'
                                     }
                                 },
                                 scales: {
@@ -286,7 +286,7 @@
                             }
                         });
         
-                        document.getElementById('attendance_status-table-body').innerHTML = Object.keys(dateWiseAttendance).map((monthDay, index) => {
+                        document.getElementById('attendance-table-body').innerHTML = Object.keys(dateWiseAttendance).map((monthDay, index) => {
     const records = dateWiseAttendance[monthDay];
     const firstRecord = records.in[0] || records.out[0];
     const userId = firstRecord.user_id;
@@ -303,11 +303,11 @@
             <td>Check In</td>
             <td>
                 <select class="form-control">
-                    <option value="0" ${records.in.length > 0 && records.in[0].attendance_status === 0 ? 'selected' : ''}>-</option>
-                    <option value="1" ${records.in.length > 0 && records.in[0].attendance_status === 1 ? 'selected' : ''}>Hadir</option>
-                    <option value="2" ${records.in.length > 0 && records.in[0].attendance_status === 2 ? 'selected' : ''}>Izin</option>
-                    <option value="3" ${records.in.length > 0 && records.in[0].attendance_status === 3 ? 'selected' : ''}>Sakit</option>
-                    <option value="4" ${records.in.length > 0 && records.in[0].attendance_status === 4 ? 'selected' : ''}>Alfa</option>
+                    <option value="0" ${records.in.length > 0 && records.in[0].attendance === 0 ? 'selected' : ''}>-</option>
+                    <option value="1" ${records.in.length > 0 && records.in[0].attendance === 1 ? 'selected' : ''}>Hadir</option>
+                    <option value="2" ${records.in.length > 0 && records.in[0].attendance === 2 ? 'selected' : ''}>Dispen</option>
+                    <option value="3" ${records.in.length > 0 && records.in[0].attendance === 3 ? 'selected' : ''}>Sakit</option>
+                    <option value="4" ${records.in.length > 0 && records.in[0].attendance === 4 ? 'selected' : ''}>Alfa</option>
                 </select>
             </td>
             <td>${records.in.length > 0 ? (records.in[0].late === 1 ? 'Late' : 'On Time') : '-'}</td>
@@ -328,11 +328,11 @@
             <td>Check Out</td>
             <td>
                 <select class="form-control">
-                    <option value="0" ${records.out.length > 0 && records.out[0].attendance_status === 0 ? 'selected' : ''}>-</option>
-                    <option value="1" ${records.out.length > 0 && records.out[0].attendance_status === 1 ? 'selected' : ''}>Hadir</option>
-                    <option value="2" ${records.out.length > 0 && records.out[0].attendance_status === 2 ? 'selected' : ''}>Izin</option>
-                    <option value="3" ${records.out.length > 0 && records.out[0].attendance_status === 3 ? 'selected' : ''}>Sakit</option>
-                    <option value="4" ${records.out.length > 0 && records.out[0].attendance_status === 4 ? 'selected' : ''}>Alfa</option>
+                    <option value="0" ${records.out.length > 0 && records.out[0].attendance === 0 ? 'selected' : ''}>-</option>
+                    <option value="1" ${records.out.length > 0 && records.out[0].attendance === 1 ? 'selected' : ''}>Hadir</option>
+                    <option value="2" ${records.out.length > 0 && records.out[0].attendance === 2 ? 'selected' : ''}>Dispen</option>
+                    <option value="3" ${records.out.length > 0 && records.out[0].attendance === 3 ? 'selected' : ''}>Sakit</option>
+                    <option value="4" ${records.out.length > 0 && records.out[0].attendance === 4 ? 'selected' : ''}>Alfa</option>
                 </select>
             </td>
             <td>${records.out.length > 0 ? '-' : '-'}</td> <!-- Update this line -->
@@ -361,7 +361,7 @@
     const row = $(event.target).closest('tr');
     const userId = row.find('input').eq(0).val();
     const datetime = row.find('input').eq(1).val();
-    const attendance_status = row.find('select').val();
+    const attendance = row.find('select').val();
     
     // Menentukan check-in atau check-out berdasarkan type
     const checkType = type === 'in' ? 'Check In' : 'Check Out';
@@ -370,7 +370,7 @@
         id: id,
         user_id: userId,
         datetime: datetime,
-        attendance_status: attendance_status,
+        attendance: attendance,
         check_type: checkType
     };
     

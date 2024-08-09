@@ -107,6 +107,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => 'Deletion of all records failed: ' . $e->getMessage()]);
         }
+    } elseif ($action == 'cleanup_duplicates') {
+        try {
+            $stmt = $pdo->prepare("DELETE ar1 FROM attendance_records ar1
+                                   INNER JOIN attendance_records ar2
+                                   WHERE ar1.id < ar2.id
+                                   AND ar1.user_id = ar2.user_id
+                                   AND DATE(ar1.datetime) = DATE(ar2.datetime)
+                                   AND ar1.attendance_status = ar2.attendance_status");
+            $stmt->execute();
+
+            echo json_encode(['status' => 'success', 'message' => 'Duplicate records cleaned up successfully']);
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Cleanup duplicates failed: ' . $e->getMessage()]);
+        }
+    } elseif ($action == 'auto_correct') {
+        try {
+            // Get all records grouped by user_id and date
+            $stmt = $pdo->query("SELECT user_id, DATE(datetime) as date, GROUP_CONCAT(id ORDER BY datetime) as ids, GROUP_CONCAT(check_type ORDER BY datetime) as check_types
+                                 FROM attendance_records
+                                 GROUP BY user_id, DATE(datetime)");
+            $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($records as $record) {
+                $ids = explode(',', $record['ids']);
+                $check_types = explode(',', $record['check_types']);
+
+                // Correct double check-ins or check-outs
+                if (count(array_unique($check_types)) == 1) {
+                    if ($check_types[0] == '0') { // All are check-ins
+                        $stmt = $pdo->prepare("UPDATE attendance_records SET check_type = 1 WHERE id = ?");
+                        $stmt->execute([$ids[count($ids) - 1]]); // Last one is check-out
+                    } elseif ($check_types[0] == '1') { // All are check-outs
+                        $stmt = $pdo->prepare("UPDATE attendance_records SET check_type = 0 WHERE id = ?");
+                        $stmt->execute([$ids[0]]); // First one is check-in
+                    }
+                }
+            }
+
+            echo json_encode(['status' => 'success', 'message' => 'Auto-correction process completed successfully']);
+        } catch (PDOException $e) {
+            echo json_encode(['status' => 'error', 'message' => 'Auto-correction process failed: ' . $e->getMessage()]);
+        }
     } elseif ($action == 'manage_users') {
         $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : null;
 
