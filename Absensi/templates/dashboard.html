@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .card {
+            flex: 1;
+            margin: 10px;
+            min-width: 300px;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 400px;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="img/logo.png" alt="Company Logo" style="height: 40px; margin-right: 10px;">
+            Attendance System
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Manage Attendances</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_users.html">Manage Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="form.html">Upload File</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <!-- Dashboard Content -->
+    <div class="container mt-4">
+        <h1>Dashboard</h1>
+        <div class="card-container">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Records</h5>
+                    <p class="card-text" id="totalRecords"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Present</h5>
+                    <p class="card-text" id="present"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Null (-)</h5>
+                    <p class="card-text" id="absent"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Izin</h5>
+                    <p class="card-text" id="Izin"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Sakit</h5>
+                    <p class="card-text" id="sakit"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Alfa</h5>
+                    <p class="card-text" id="alfa"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Late</h5>
+                    <p class="card-text" id="late"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">On Time</h5>
+                    <p class="card-text" id="onTime"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Late Statistics</h5>
+                    <p class="card-text" id="lateStatistics"></p>
+                </div>
+            </div>
+        </div>
+        <!-- Chart Container Row -->
+        <div class="row mt-4">
+            <!-- Pie Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Line Chart -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="dateWiseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStatistics();
+        });
+
+        function fetchStatistics() {
+            fetch('../fetch_statistics.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Debugging line to check data
+
+                    document.getElementById('totalRecords').textContent = data.total_records;
+                    document.getElementById('present').textContent = data.present;
+                    document.getElementById('absent').textContent = data.absent;
+                    document.getElementById('Izin').textContent = data.Izin;
+                    document.getElementById('sakit').textContent = data.sakit;
+                    document.getElementById('alfa').textContent = data.alfa;
+                    document.getElementById('late').textContent = data.late;
+                    document.getElementById('onTime').textContent = data.on_time;
+
+                    const lateStatistics = `
+                        Total Late: ${data.late}<br>
+                        <ul>
+                            <li>15-30 minutes late: ${data.late_15_30}</li>
+                            <li>30-60 minutes late: ${data.late_30_60}</li>
+                            <li>More than an hour late: ${data.late_60}</li>
+                        </ul>
+                    `;
+                    document.getElementById('lateStatistics').innerHTML = lateStatistics;
+
+                    const ctx = document.getElementById('attendanceChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Present', 'Null', 'Izin' , 'Sakit', 'Alfa', 'Late', 'On Time'],
+                            datasets: [{
+                                data: [data.present, data.absent, data.Izin, data.sakit, data.alfa, data.late, data.on_time],
+                                backgroundColor: ['#4CAF50', '#FF5733', '#FFC107', '#2196F3'],
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'attendance_status Statistics'
+                                }
+                            }
+                        }
+                    });
+
+                    // Prepare date-wise data for the line chart
+                    const dateWiseLabels = data.date_wise.map(item => item.date);
+                    const lateData = data.date_wise.map(item => item.late_count);
+                    const onTimeData = data.date_wise.map(item => item.on_time_count);
+
+                    console.log(dateWiseLabels, lateData, onTimeData); // Debugging line to check chart data
+
+                    const dateWiseCtx = document.getElementById('dateWiseChart').getContext('2d');
+                    new Chart(dateWiseCtx, {
+                        type: 'line',
+                        data: {
+                            labels: dateWiseLabels,
+                            datasets: [
+                                {
+                                    label: 'Late',
+                                    data: lateData,
+                                    borderColor: '#FF5733',
+                                    fill: false
+                                },
+                                {
+                                    label: 'On Time',
+                                    data: onTimeData,
+                                    borderColor: '#2196F3',
+                                    fill: false
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Date-wise attendance_status Statistics'
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Date'
+                                    }
+                                },
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Count'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+    </script>
+</body>
+</html>

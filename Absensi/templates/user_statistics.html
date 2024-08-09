@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Statistics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+        .combined-chart-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .table-container {
+            margin-top: 20px;
+        }
+        .card-container .card {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="img/logo.png" alt="Company Logo" style="height: 40px; margin-right: 10px;">
+            attendance_status System
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Manage Attendances</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_users.html">Manage Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="form.html">Upload File</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 id="user-name">User Statistics</h1>
+        <div class="card-container d-flex flex-wrap">
+            <!-- Cards for statistics -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Records</h5>
+                    <p class="card-text" id="totalRecords"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Present</h5>
+                    <p class="card-text" id="present"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Null (-)</h5>
+                    <p class="card-text" id="absent"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Izin</h5>
+                    <p class="card-text" id="Izin"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Sakit</h5>
+                    <p class="card-text" id="sakit"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Alfa</h5>
+                    <p class="card-text" id="alfa"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Late</h5>
+                    <p class="card-text" id="late"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">On Time</h5>
+                    <p class="card-text" id="onTime"></p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Late Statistics</h5>
+                    <p class="card-text" id="lateStatistics"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="combined-chart-container">
+                    <div class="chart-wrapper">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="dateWiseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>attendance_status Records</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Full Name</th>
+                        <th>Date Time</th>
+                        <th>Check Type</th>
+                        <th>attendance_status</th>
+                        <th>Keterlambatan</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance_status-table-body">
+                    <!-- Records will be injected here -->
+                </tbody>
+            </table>
+        </div>
+        
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/eonasdan-bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <script>
+        // Inisialisasi flatpickr pada elemen input tanggal
+        document.addEventListener('DOMContentLoaded', function () {
+            flatpickr('.datetimepicker', {
+                enableTime: true,
+                dateFormat: 'Y-m-d H:i',
+            });
+        });
+        
+        function fetchUserStatistics() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('user_id');
+        
+            if (!userId) {
+                document.getElementById('user-name').innerHTML = '<p class="text-danger">User ID is missing.</p>';
+                return;
+            }
+        
+            fetch(`../fetch_statistics.php?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('user-name').innerHTML = `<p class="text-danger">${data.error}</p>`;
+                    } else {
+                        document.getElementById('user-name').textContent = `${data.user.full_name}'s User Statistics`;
+        
+                        const attendance_status = data.attendance_status;
+                        document.getElementById('totalRecords').textContent = attendance_status.length;
+                        const presentCount = attendance_status.filter(record => record.attendance_status > 0).length;
+                        const absentCount = attendance_status.filter(record => record.attendance_status === 0).length;
+                        const lateCount = attendance_status.filter(record => record.late === 1).length;
+                        const onTimeCount = attendance_status.length - lateCount;
+                        document.getElementById('present').textContent = presentCount;
+                        document.getElementById('absent').textContent = absentCount;
+                        document.getElementById('late').textContent = lateCount;
+                        document.getElementById('onTime').textContent = onTimeCount;
+        
+                        const lateStatistics = `
+                            Total Late: ${lateCount}<br>
+                            <ul>
+                                <li>15-30 minutes late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 15 && new Date(record.datetime).getMinutes() < 30).length}</li>
+                                <li>30-60 minutes late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 30 && new Date(record.datetime).getMinutes() < 60).length}</li>
+                                <li>More than an hour late: ${attendance_status.filter(record => record.late === 1 && new Date(record.datetime).getMinutes() >= 60).length}</li>
+                            </ul>
+                        `;
+                        document.getElementById('lateStatistics').innerHTML = lateStatistics;
+        
+                        const ctx = document.getElementById('attendanceChart').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Present', 'Null', 'Late', 'On Time'],
+                                datasets: [{
+                                    data: [presentCount, absentCount, lateCount, onTimeCount],
+                                    backgroundColor: ['#4CAF50', '#FF5733', '#FFC107', '#2196F3'],
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'attendance_status Statistics'
+                                    }
+                                }
+                            }
+                        });
+        
+                        const dateWiseAttendance = {};
+                        attendance_status.forEach(record => {
+                            const date = new Date(record.datetime);
+                            const monthDay = date.toISOString().split('T')[0].substring(5); // Extract month and day
+                            if (!dateWiseAttendance[monthDay]) {
+                                dateWiseAttendance[monthDay] = { in: [], out: [] };
+                            }
+                            if (record.attendance_status === 1) {
+                                dateWiseAttendance[monthDay].in.push(record);
+                            } else {
+                                dateWiseAttendance[monthDay].out.push(record);
+                            }
+                        });
+        
+                        const dateWiseCtx = document.getElementById('dateWiseChart').getContext('2d');
+                        new Chart(dateWiseCtx, {
+                            type: 'line',
+                            data: {
+                                labels: Object.keys(dateWiseAttendance),
+                                datasets: [{
+                                    label: 'attendance_status Count',
+                                    data: Object.values(dateWiseAttendance).map(records => records.in.length + records.out.length),
+                                    borderColor: '#FF5733',
+                                    backgroundColor: 'rgba(255, 87, 51, 0.2)',
+                                    borderWidth: 1,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Date Wise attendance_status'
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Date'
+                                        }
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: 'Count'
+                                        },
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+        
+                        document.getElementById('attendance_status-table-body').innerHTML = Object.keys(dateWiseAttendance).map((monthDay, index) => {
+    const records = dateWiseAttendance[monthDay];
+    const firstRecord = records.in[0] || records.out[0];
+    const userId = firstRecord.user_id;
+    const fullName = data.user.full_name;
+    const datetimeIn = records.in.length > 0 ? moment(records.in[0].datetime).format('YYYY-MM-DDTHH:mm') : '';
+    const datetimeOut = records.out.length > 0 ? moment(records.out[0].datetime).format('YYYY-MM-DDTHH:mm') : '';
+
+    return `
+        <tr>
+            <td>${index + 1}</td>
+            <td><input type="text" value="${userId}" class="form-control"></td>
+            <td>${fullName}</td>
+            <td><input type="datetime-local" value="${datetimeIn}" class="form-control datetimepicker"></td>
+            <td>Check In</td>
+            <td>
+                <select class="form-control">
+                    <option value="0" ${records.in.length > 0 && records.in[0].attendance_status === 0 ? 'selected' : ''}>-</option>
+                    <option value="1" ${records.in.length > 0 && records.in[0].attendance_status === 1 ? 'selected' : ''}>Hadir</option>
+                    <option value="2" ${records.in.length > 0 && records.in[0].attendance_status === 2 ? 'selected' : ''}>Izin</option>
+                    <option value="3" ${records.in.length > 0 && records.in[0].attendance_status === 3 ? 'selected' : ''}>Sakit</option>
+                    <option value="4" ${records.in.length > 0 && records.in[0].attendance_status === 4 ? 'selected' : ''}>Alfa</option>
+                </select>
+            </td>
+            <td>${records.in.length > 0 ? (records.in[0].late === 1 ? 'Late' : 'On Time') : '-'}</td>
+            <td>
+                <button onclick="saveRecord(${firstRecord.id}, 'in')" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Change
+                </button>
+                <button onclick="deleteRecord(${firstRecord.id})" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="text" value="${userId}" class="form-control"></td>
+            <td>${fullName}</td>
+            <td><input type="datetime-local" value="${datetimeOut}" class="form-control datetimepicker"></td>
+            <td>Check Out</td>
+            <td>
+                <select class="form-control">
+                    <option value="0" ${records.out.length > 0 && records.out[0].attendance_status === 0 ? 'selected' : ''}>-</option>
+                    <option value="1" ${records.out.length > 0 && records.out[0].attendance_status === 1 ? 'selected' : ''}>Hadir</option>
+                    <option value="2" ${records.out.length > 0 && records.out[0].attendance_status === 2 ? 'selected' : ''}>Izin</option>
+                    <option value="3" ${records.out.length > 0 && records.out[0].attendance_status === 3 ? 'selected' : ''}>Sakit</option>
+                    <option value="4" ${records.out.length > 0 && records.out[0].attendance_status === 4 ? 'selected' : ''}>Alfa</option>
+                </select>
+            </td>
+            <td>${records.out.length > 0 ? '-' : '-'}</td> <!-- Update this line -->
+            <td>
+                <button onclick="saveRecord(${firstRecord.id}, 'out')" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Change
+                </button>
+                <button onclick="deleteRecord(${firstRecord.id})" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+            </td>
+        </tr>`;
+}).join('');
+
+                        
+                        // Reinitialize datetime pickers after table update
+                        $('.datetimepicker').datetimepicker({
+                            format: 'YYYY-MM-DDTHH:mm'
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching user statistics:', error));
+        }
+        
+        function saveRecord(id, type) {
+    const row = $(event.target).closest('tr');
+    const userId = row.find('input').eq(0).val();
+    const datetime = row.find('input').eq(1).val();
+    const attendance_status = row.find('select').val();
+    
+    // Menentukan check-in atau check-out berdasarkan type
+    const checkType = type === 'in' ? 'Check In' : 'Check Out';
+    
+    const data = {
+        id: id,
+        user_id: userId,
+        datetime: datetime,
+        attendance_status: attendance_status,
+        check_type: checkType
+    };
+    
+    fetch('../save_record.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Record saved successfully.');
+        } else {
+            alert('Failed to save record.');
+        }
+    })
+    .catch(error => console.error('Error saving record:', error));
+}
+
+        
+function deleteRecord(id) {
+    if (confirm('Are you sure you want to delete this record?')) {
+        fetch('../delete_record.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                alert('Record deleted successfully.');
+                fetchUserStatistics(); // Refresh the statistics after deletion
+            } else {
+                alert('Failed to delete record.');
+            }
+        })
+        .catch(error => console.error('Error deleting record:', error));
+    }
+}
+        
+        // Fetch user statistics on page load
+        fetchUserStatistics();
+        </script>
+        
+ 
+</body>
+</html>

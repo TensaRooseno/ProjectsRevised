@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Attendance Records</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../templates/css/style.css">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="img/logo.png" alt="Company Logo" style="height: 40px; margin-right: 10px;">
+            Attendance System
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Manage Attendances</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_users.html">Manage Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="form.html">Upload File</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Manage Attendance Records</h1>
+
+        <div class="btn-container">
+            <a href="../export.php" class="btn btn-success">Export to Excel</a>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
+                Delete Records
+            </button>
+            <!-- <button class="btn btn-warning" onclick="autoCorrect()">Auto Correct Records</button> -->
+        </div>
+
+        <!-- Delete Records Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete Records</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Select the type of records you want to delete:</p>
+                        <button class="btn btn-danger" onclick="deleteRecords('today')">Delete Today's Records</button>
+                        <button class="btn btn-danger" onclick="deleteRecords('all')">Delete All Records</button>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form class="filter-form">
+            <div class="form-group">
+                <label for="idFilter">ID :</label>
+                <input type="text" id="idFilter" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="userIdFilter">User ID :</label>
+                <input type="text" id="userIdFilter" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="attendanceFilter">Attendance Type :</label>
+                <select id="attendanceFilter" class="form-control">
+                    <option value="">All</option>
+                    <option value="0">-</option>
+                    <option value="1">Present</option>
+                    <option value="2">Izin</option>
+                    <option value="3">Sakit</option>
+                    <option value="4">Alfa</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="nameFilter">Name :</label>
+                <input type="text" id="nameFilter" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="lateFilter">Late Status :</label>
+                <select id="lateFilter" class="form-control">
+                    <option value="">All</option>
+                    <option value="1">Late</option>
+                    <option value="0">On Time</option>
+                </select>
+            </div>
+            <button type="button" onclick="fetchRecords()" class="btn btn-primary">Filter</button>
+        </form>
+
+        <div id="records"></div>
+    </div>
+    <script src="../templates/js/scripts.js"></script>
+</body>
+</html>

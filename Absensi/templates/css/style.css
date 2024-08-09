@@ -1,0 +1,82 @@
+/* Global Styles */
+body {
+    background-color: #f8f9fa; /* Light background for better readability */
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.container {
+    background-color: #fff; /* White background for the content area */
+    border-radius: 8px; /* Rounded corners for the container */
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.btn-container {
+    display: flex;
+    gap: 15px; /* Increased space between buttons */
+    margin-bottom: 20px; /* Space below the buttons */
+}
+
+.btn-container .btn {
+    font-size: 14px; /* Consistent font size for buttons */
+}
+
+.modal-content {
+    border-radius: 8px; /* Rounded corners for modal */
+}
+
+.modal-body button {
+    margin-bottom: 10px; /* Space between modal buttons */
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px; /* Increased space between filter items */
+    margin-bottom: 20px;
+}
+
+.filter-form .form-group {
+    flex: 1;
+    min-width: 200px; /* Increased minimum width for better readability */
+}
+
+/* Table Styles */
+#records table {
+width: 100%;
+border-collapse: collapse; /* Collapse borders for cleaner look */
+}
+
+#records th, #records td {
+padding: 12px; /* Increased padding for cells */
+text-align: left;
+vertical-align: middle;
+border-bottom: 1px solid #e0e0e0; /* Subtle border for row separation */
+}
+
+#records th {
+background-color: #007bff; /* Blue background for headers */
+color: #fff; /* White text for headers */
+font-weight: bold; /* Bold text for headers */
+}
+
+#records td {
+background-color: #f1f1f1; /* Light gray background for cells */
+}
+
+#records .font-weight-bold {
+background-color: #d1ecf1; /* Light blue background for month and week rows */
+}
+
+.filter-form select.form-control {
+    height: auto; /* Adjust height to better fit content */
+}
